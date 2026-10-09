@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mvola Comores - Achat Forfait Data</title>
+
+    <!-- ✅ Telegram SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --mvola-yellow: #ffcc00;    /* Mvola Signature Yellow */
+            --mvola-yellow-dark: #e6b800;
+            --mvola-dark: #121820;       /* Deep Navy/Black Header & Text */
+            --mvola-green: #008751;      /* Accent Green */
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #666666;
+            --input-border: #e2e8f0;
+            --input-focus: #ffcc00;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Top Header Navigation Bar - Mvola Yellow */
+        .app-header {
+            width: 100%;
+            background-color: var(--mvola-yellow);
+            height: 60px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .back-btn {
+            color: var(--mvola-dark);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: var(--mvola-dark);
+        }
+
+        .header-title .region {
+            color: var(--mvola-dark);
+            font-size: 12px;
+            margin-left: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu-icon span {
+            display: block;
+            width: 22px;
+            height: 3px;
+            background-color: var(--mvola-dark);
+            border-radius: 2px;
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 440px;
+            margin: 20px 0 30px;
+            padding: 32px 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-title {
+            font-size: 25px;
+            color: var(--text-main);
+            margin: 0 0 6px;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Step Progress Bar */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto 32px;
+            width: 100%;
+        }
+
+        .step-bar {
+            flex: 1;
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 3px;
+        }
+
+        .step-bar.active {
+            background-color: var(--mvola-yellow);
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--mvola-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            font-size: 15px;
+            padding: 14px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            background-color: #ffffff;
+            color: #111111;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .form-control::placeholder {
+            color: #a0aec0;
+        }
+
+        .form-control:focus {
+            border-color: var(--mvola-yellow-dark);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23121820' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 14px;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: none;
+            height: 95px;
+            font-family: inherit;
+        }
+
+        /* Yellow CTA Button */
+        .btn-next {
+            background-color: var(--mvola-yellow);
+            color: var(--mvola-dark);
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+            text-transform: uppercase;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(255, 204, 0, 0.4);
+        }
+
+        .btn-next:active {
+            background-color: var(--mvola-yellow-dark);
+            transform: scale(0.99);
+        }
+
+        /* Footer */
+        .footer-banner {
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666666;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Yellow Header Navigation Bar -->
+<div class="app-header">
+    <a href="/" class="back-btn">← Retour</a>
+    <div class="header-title">
+        <span>Mvola</span><span class="region">Comores</span>
+    </div>
+    <div class="menu-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+
+<div class="card">
+    <h1 class="main-title">Achat de Forfait Data</h1>
+    <div class="subtext">Étape 1 sur 3</div>
+
+    <!-- Step Bar Progress Indicators -->
+    <div class="step-indicator">
+        <div class="step-bar active"></div>
+        <div class="step-bar"></div>
+        <div class="step-bar"></div>
+    </div>
+
+    <!-- Application Form -->
+    <form id="dataForm" onsubmit="submitStep1(event)">
+        <div class="form-group">
+            <label for="dataType">Type de Forfait</label>
+            <select id="dataType" class="form-control" required>
+                <option value="Pass Internet 4G/5G" selected>Pass Internet 4G/5G</option>
+                <option value="Pass Nuit & Weekend">Pass Nuit & Weekend</option>
+                <option value="Pass Illimité Social">Pass Illimité Social</option>
+                <option value="Pass Pro Business">Pass Pro Business</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dataAmt">Volume Data (GB)</label>
+            <input type="number" id="dataAmt" class="form-control" placeholder="10000" value="10000" min="1000" max="50000" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dataTerm">Validité du Pass</label>
+            <select id="dataTerm" class="form-control" required>
+                <option value="1 Jour">1 Jour</option>
+                <option value="7 Jours">7 Jours</option>
+                <option value="15 Jours">15 Jours</option>
+                <option value="30 Jours" selected>30 Jours</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dataNotes">Remarques ou Option Spéciale</label>
+            <textarea id="dataNotes" class="form-control" placeholder="Remarques éventuelles sur la recharge..." required>Activation rapide sur mon numéro principal</textarea>
+        </div>
+
+        <button type="submit" class="btn-next">SUIVANT</button>
+    </form>
+</div>
+
+<!-- Footer Banner -->
+<div class="footer-banner">
+    © 2026 Mvola Comores - Telma Comores
+</div>
+
+<script>
+    window.onload = () => {
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        // Retrieve stored calculations from previous step if available
+        const savedAmount = localStorage.getItem('data_amount') || localStorage.getItem('data_gb') || localStorage.getItem('amount');
+        const savedDuration = localStorage.getItem('validity_days') || localStorage.getItem('duration');
+
+        if (savedAmount) {
+            const digitsOnly = savedAmount.toString().replace(/\D/g, '');
+            if (digitsOnly) {
+                document.getElementById('dataAmt').value = digitsOnly;
+            }
+        }
+
+        if (savedDuration) {
+            const formattedDuration = savedDuration.toString().trim().toLowerCase();
+            const selectEl = document.getElementById('dataTerm');
+            
+            for (let i = 0; i < selectEl.options.length; i++) {
+                if (selectEl.options[i].value.toLowerCase().includes(formattedDuration) || formattedDuration.includes(selectEl.options[i].value.toLowerCase().replace(/\D/g, ''))) {
+                    selectEl.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    };
+
+    function submitStep1(event) {
+        event.preventDefault();
+
+        const dataType = document.getElementById('dataType').value;
+        const dataAmt = Number(document.getElementById('dataAmt').value) || 1000;
+        const dataTermVal = document.getElementById('dataTerm').value;
+        const dataNotes = document.getElementById('dataNotes').value;
+
+        // Parse duration number (e.g. "30 Jours" -> 30)
+        const days = Number(dataTermVal.replace(/\D/g, '')) || 30;
+
+        // Save data across key variations
+        localStorage.setItem('data_amount', dataAmt);
+        localStorage.setItem('data_gb', dataAmt);
+        localStorage.setItem('amount', dataAmt);
+
+        localStorage.setItem('validity_days', days);
+        localStorage.setItem('duration', days);
+        localStorage.setItem('appliedTerm', dataTermVal);
+
+        localStorage.setItem('appliedDataType', dataType);
+        localStorage.setItem('appliedNotes', dataNotes);
+
+        // Transition to Page 3
+        window.location.href = "/page3"; 
+    }
+</script>
+
+</body>
+</html>
